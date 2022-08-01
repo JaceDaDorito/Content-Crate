@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "AoJp5SX0ev3ibP6MDugchlHYzVNfM10L6BLK4fx65maohYEgpQvoqGa94MvtKm1zse1sBVuksBzpXiXf/SzlkQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Jason\\.nuget\\packages\\tmodloader.codeassist\\0.1.5\\tmodloader.codeassist.0.1.5.nupkg.sha512"
+  ],
+  "logs": []
+}
