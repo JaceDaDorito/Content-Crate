@@ -12,6 +12,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using ReLogic.Content;
 using Terraria.Graphics.Shaders;
+using Terraria.GameContent.Creative;
+using Terraria.Graphics.Effects;
+
 
 namespace ContentCrate.Items.Weapons.Swung
 {
@@ -21,6 +24,7 @@ namespace ContentCrate.Items.Weapons.Swung
         {
             DisplayName.SetDefault("Diamond Tipped Halberd"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
             Tooltip.SetDefault("First spear.");
+            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -47,13 +51,7 @@ namespace ContentCrate.Items.Weapons.Swung
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe(1);
-            recipe.AddIngredient(ItemID.SilverBar, 10);
-            recipe.AddIngredient(ItemID.Diamond, 3);
-            recipe.AddTile(TileID.Anvils);
-            recipe.Register();
-
-            recipe = CreateRecipe(1);
-            recipe.AddIngredient(ItemID.TungstenBar, 10);
+            recipe.AddRecipeGroup("ContentCrate:SilverBars", 10);
             recipe.AddIngredient(ItemID.Diamond, 3);
             recipe.AddTile(TileID.Anvils);
             recipe.Register();
@@ -77,10 +75,9 @@ namespace ContentCrate.Items.Weapons.Swung
 
     internal class HalberdProj : ModProjectile
     {
-        internal PrimitiveTrail TrailDrawer;
-        public static int TrailLength = 35;
 
-        public float SwingRadians = MathHelper.Pi * 1.35f;
+
+        //public float SwingRadians = MathHelper.Pi * 1.35f;
         private CurrentAttack currentAttack
         {
             get {
@@ -103,7 +100,7 @@ namespace ContentCrate.Items.Weapons.Swung
         {
             get
             {
-                if ((int)currentAttack < 2)
+                if (currentAttack != CurrentAttack.Thrust)
                     return 40f * (1 / attackSpeed);
                 return 60f;
             }
@@ -114,27 +111,22 @@ namespace ContentCrate.Items.Weapons.Swung
         private bool initialized = false;
         //Vector2 direction = Vector2.Zero;
         float collisionPoint = 0;
-
-        /*private bool FirstTickOfSwing
-        {
-            get => Projectile.ai[0] == 0;
-        }*/
-
-        //swing
-        public Vector2 direction => Projectile.velocity.RotatedBy(AngleFromBase * Player.direction);
+        public Vector2 direction => Projectile.velocity.RotatedBy(AngleFromBase(progress) * Player.direction);
+        public int mirror => Math.Sign(Projectile.velocity.X) <= 0 ? -1 : 1;
+        public float baseRotation => Projectile.velocity.ToRotation(); 
         private float progress => (SwingTime - Projectile.timeLeft) / (float)SwingTime;
 
         public CurveSegment SwingAnti = new(SineOutEasing, 0f, -0.7f, -0.4f, 0);
         public CurveSegment SwingAcce = new(PolyInOutEasing, 0.1f, -1.2f, 2f, 3);
 
-        public float SwingDisplace => PiecewiseAnimation(progress, new CurveSegment[] { SwingAnti, SwingAcce });
+        public float SwingDisplace(float prog) => PiecewiseAnimation(prog, new CurveSegment[] { SwingAnti, SwingAcce });
 
         //stab
         public CurveSegment StabAnti = new(SineBumpEasing, 0f, 0f, -0.1f, 0);
         public CurveSegment StabThrust = new(PolyOutEasing, 0.1f, 0f, 1f, 6);
         public CurveSegment StabRetract = new(PolyInEasing, 0.6f, 1f, -0.5f, 3);
 
-        public float StabDisplace => PiecewiseAnimation(progress, new CurveSegment[] { StabAnti, StabThrust, StabRetract });
+        public float StabDisplace(float prog) => PiecewiseAnimation(prog, new CurveSegment[] { StabAnti, StabThrust, StabRetract });
 
 
         Dust thrustGlow = new Dust();
@@ -144,30 +136,56 @@ namespace ContentCrate.Items.Weapons.Swung
         {
             get
             {
-                if ((int)currentAttack < 2)
+                if (currentAttack != CurrentAttack.Thrust)
                     return 30;
-                return 60 * StabDisplace;
+                return 60 * StabDisplace(progress);
             }
         }
 
-        public float AngleFromBase
+        public float AngleFromBase(float prog)
         {
-            get
+            switch (currentAttack)
             {
-                switch ((int)currentAttack)
-                {
-                    case 0:
-                        return SwingDisplace * MathHelper.PiOver2;
-                    case 1:
-                        return -SwingDisplace * MathHelper.PiOver2;
-                    default:
-                        return 0;
-                }
+                case CurrentAttack.Down:
+                    return SwingDisplace(prog) * MathHelper.PiOver2;
+                case CurrentAttack.Up:
+                    return -SwingDisplace(prog) * MathHelper.PiOver2;
+                default:
+                    return 0;
             }
         }
 
         public float sweetSpot = 70f;
 
+        internal PrimitiveTrail TrailDrawer;
+        const float BladeLength = 140;
+        public float TrailEndProgression
+        {
+            get
+            {
+                float endProgression;
+                if (progress < 0.75f)
+                    endProgression = progress - 0.5f + 0.1f * (progress / 0.75f);
+
+                else
+                    endProgression = progress - 0.4f * (1 - (progress - 0.75f) / 0.75f);
+
+                return Math.Clamp(endProgression, 0, 1);
+            }
+        }
+
+        public Vector2 DirectionAtProgressScuffed(float progress)
+        {
+            float angleShift = AngleFromBase(progress);
+
+            //Get the coordinates of the angle shift.
+            Vector2 anglePoint = angleShift.ToRotationVector2();
+
+            //And back into an angle
+            angleShift = anglePoint.ToRotation();
+
+            return (baseRotation + angleShift * mirror).ToRotationVector2();
+        }
 
         public override void SetStaticDefaults()
         {
@@ -192,7 +210,6 @@ namespace ContentCrate.Items.Weapons.Swung
         {
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Player.MountedCenter, Projectile.Center + direction * 80.7f, 10, ref collisionPoint))
             {
-                Main.NewText(collisionPoint);
                 if (collisionPoint >= sweetSpot && !FirstTickOfSwing)
                 {
                     SoundEngine.PlaySound(SoundID.Research);
@@ -209,23 +226,23 @@ namespace ContentCrate.Items.Weapons.Swung
             {
                 float adjustedKBRes = (float)Math.Pow(target.knockBackResist, 0.5);
                 Vector2 coolKnockback;
-                switch ((int)currentAttack)
+                switch (currentAttack)
                 {
 
-                    case 0:
+                    case CurrentAttack.Down:
                         coolKnockback = Vector2.UnitX * (21f - (collisionPoint / 5f)) * adjustedKBRes;
                         if (Math.Sign(Projectile.velocity.X) < 0)
                             coolKnockback *= -1;
-
-                        target.velocity += coolKnockback;
                         break;
-                    case 1:
-                        target.velocity.Y += -9f * adjustedKBRes;
+                    case CurrentAttack.Up:
+                        coolKnockback.X = 0f;
+                        coolKnockback.Y = -9f * adjustedKBRes;
                         break;
                     default:
-                        target.velocity += Projectile.velocity * 10f/*(27f - (collisionPoint / 4.8f))*/ * adjustedKBRes;
+                        coolKnockback = Projectile.velocity * 10f/*(27f - (collisionPoint / 4.8f))*/ * adjustedKBRes;
                         break;
                 }
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.position, coolKnockback, ModContent.ProjectileType<HalberdCoolKB>(), 0, 0, Main.myPlayer, target.whoAmI);
             }
         }
 
@@ -327,30 +344,77 @@ namespace ContentCrate.Items.Weapons.Swung
 
         }
 
-        internal Color ColorFunction(float completionRatio)
+        public IEnumerable<Vector2> GenerateSlashPoints()
         {
-            float fadeOpacity = Math.Min(SwingTime / (float)TrailLength, 1f);
-            return Color.Gray * fadeOpacity;
+            List<Vector2> result = new();
 
+            for (int i = 0; i < 40; i++)
+            {
+                float prog = MathHelper.Lerp(progress, TrailEndProgression, i / 40f);
+
+                result.Add(DirectionAtProgressScuffed(prog) * (BladeLength - 100f) * Projectile.scale);
+            }
+
+            return result;
         }
 
-        internal float WidthFunction(float completionRatio)
+        public Color ColorFunction(float completionRatio)
         {
-            float width = Math.Min(SwingTime / (float)TrailLength, 1f);
-            return (1 - completionRatio) * 6.4f * width;
+            return Color.CadetBlue * Terraria.Utils.GetLerpValue(1f, 0.2f, completionRatio, true) * Projectile.Opacity * 0.5f;
+
+        }
+        public float WidthFunction(float completionRatio) => Projectile.scale * 30f;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (buffer)
+                return false;
+
+            if (currentAttack != CurrentAttack.Thrust)
+            {
+                TrailDrawer ??= new(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, null);
+                TrailDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 75);
+            }
+
+            return true;
+        }
+
+        public void DrawSlash()
+        {
+            //Main.spriteBatch.Enter
+            //GameShaders.Misc["ContentCrate:ExobladeSlash"].Set
+        }
+
+    }
+
+
+    internal class HalberdCoolKB : ModProjectile
+    {
+        public override string Texture => "ContentCrate/BlankSprite";
+
+        private float enemyWhoAmI
+        {
+            get => Projectile.ai[0];
+        }
+
+        private NPC target => Main.npc[(int)enemyWhoAmI];
+
+        public override void AI()
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                target.velocity += Projectile.velocity;
+                target.netUpdate = true;
+            }
+
+            Projectile.Kill();
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, TrailLength);
-
-            if (buffer)
-                return false;
-            return true;
+            return false;
         }
-
     }
+
 
 }

@@ -49,5 +49,6 @@ namespace ContentCrate.Utils
 
             projectionMatrix = Matrix.CreateOrthographicOffCenter(0f, width * zoom.X, 0f, height * zoom.Y, 0f, 1f) * zoomScaleMatrix;
         }
+
     }
 }
