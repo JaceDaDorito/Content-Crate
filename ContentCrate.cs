@@ -21,6 +21,7 @@ using Terraria.UI.Chat;
 using System.Collections.Concurrent;
 using System.Linq;
 using static Terraria.ModLoader.Core.TmodFile;
+using ContentCrate.Effects;
 
 namespace ContentCrate
 {
@@ -31,7 +32,12 @@ namespace ContentCrate
         {
 			Instance = this;
         }
-		public override void AddRecipeGroups()
+
+        public override void Load()
+        {
+			ContentCrateShaders.LoadShaders();
+        }
+        public override void AddRecipeGroups()
         {
 			RecipeGroup BaseGroup(object GroupName, int[] Items)
 			{

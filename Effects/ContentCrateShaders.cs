@@ -17,10 +17,10 @@ namespace ContentCrate.Effects
                 return;
 
             ExobladeSlashShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/ExobladeSlashShader", AssetRequestMode.ImmediateLoad).Value;
-            LightningShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/ContentCareShaders", AssetRequestMode.ImmediateLoad).Value;
+            LightningShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/LightningShader", AssetRequestMode.ImmediateLoad).Value;
 
             GameShaders.Misc["ContentCrate:ExobladeSlash"] = new MiscShaderData(new Ref<Effect>(ExobladeSlashShader), "TrailPass");
-            GameShaders.Misc["ContentCrate:LightningShader"] = new MiscShaderData(new Ref<Effect>(ExobladeSlashShader), "TrailPass");
+            GameShaders.Misc["ContentCrate:LightningShader"] = new MiscShaderData(new Ref<Effect>(LightningShader), "TrailPass");
         }
     }
 }

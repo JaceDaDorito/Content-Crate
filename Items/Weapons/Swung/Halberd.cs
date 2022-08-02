@@ -372,8 +372,8 @@ namespace ContentCrate.Items.Weapons.Swung
 
             if (currentAttack != CurrentAttack.Thrust)
             {
-                TrailDrawer ??= new(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, null);
-                TrailDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 75);
+                TrailDrawer ??= new(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["ContentCrate:ExobladeSlash"]);
+                DrawSlash();
             }
 
             return true;
@@ -381,8 +381,14 @@ namespace ContentCrate.Items.Weapons.Swung
 
         public void DrawSlash()
         {
-            //Main.spriteBatch.Enter
-            //GameShaders.Misc["ContentCrate:ExobladeSlash"].Set
+            Main.spriteBatch.EnterShaderRegion();
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].SetShaderTexture(ModContent.Request<Texture2D>("ContentCrate/Effects/Textures/EternityStreak"));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseColor(new Color(1, 255, 1));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseSecondaryColor(new Color(57, 46, 115));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(mirror == 1);
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].Apply();
+            TrailDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 25);
+            Main.spriteBatch.ExitShaderRegion();
         }
 
     }
