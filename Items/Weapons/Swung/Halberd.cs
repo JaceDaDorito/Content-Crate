@@ -288,7 +288,7 @@ namespace ContentCrate.Items.Weapons.Swung
                 Projectile.ai[1] = 1;
                 InitializationEffects();
             }
-            Projectile.rotation = direction.ToRotation() + MathHelper.PiOver4 *;
+            Projectile.rotation = direction.ToRotation() + MathHelper.PiOver4;
 
             //switch()
             Projectile.Center = Player.MountedCenter + (DistanceFromPlayer * direction);
