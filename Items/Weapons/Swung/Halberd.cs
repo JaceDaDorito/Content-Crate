@@ -14,6 +14,7 @@ using ReLogic.Content;
 using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
 using Terraria.Graphics.Effects;
+using static Terraria.ModLoader.ModContent;
 
 
 namespace ContentCrate.Items.Weapons.Swung
@@ -147,9 +148,9 @@ namespace ContentCrate.Items.Weapons.Swung
             switch (currentAttack)
             {
                 case CurrentAttack.Down:
-                    return SwingDisplace(prog) * MathHelper.PiOver2;
+                    return SwingDisplace(prog) * MathHelper.PiOver2 * Player.gravDir;
                 case CurrentAttack.Up:
-                    return -SwingDisplace(prog) * MathHelper.PiOver2;
+                    return -SwingDisplace(prog) * MathHelper.PiOver2 * Player.gravDir;
                 default:
                     return 0;
             }
@@ -287,7 +288,7 @@ namespace ContentCrate.Items.Weapons.Swung
                 Projectile.ai[1] = 1;
                 InitializationEffects();
             }
-            Projectile.rotation = direction.ToRotation() + MathHelper.PiOver4;
+            Projectile.rotation = direction.ToRotation() + MathHelper.PiOver4 *;
 
             //switch()
             Projectile.Center = Player.MountedCenter + (DistanceFromPlayer * direction);
@@ -296,10 +297,11 @@ namespace ContentCrate.Items.Weapons.Swung
             if (Math.Sign(Projectile.velocity.X) * ((int)currentAttack == 1 ? -1 : 1) < 0)
             {
                 Projectile.rotation += MathHelper.PiOver2;
-                Projectile.spriteDirection = -1;
+                Projectile.spriteDirection *= -1;
             }
-            
-            
+            //Projectile.spriteDirection *= (int)Player.gravDir;
+
+
 
             if (Projectile.timeLeft == 1 && !buffer){
                 buffer = true;
@@ -308,7 +310,7 @@ namespace ContentCrate.Items.Weapons.Swung
 
 
             Player.direction = Math.Sign(Projectile.velocity.X);
-            Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, direction.ToRotation() - MathHelper.PiOver2);
+            Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, direction.ToRotation() * Player.gravDir - MathHelper.PiOver2 );
         }
 
         public void InitializationEffects()
@@ -352,7 +354,7 @@ namespace ContentCrate.Items.Weapons.Swung
             {
                 float prog = MathHelper.Lerp(progress, TrailEndProgression, i / 40f);
 
-                result.Add(DirectionAtProgressScuffed(prog) * (BladeLength - 100f) * Projectile.scale);
+                result.Add(DirectionAtProgressScuffed(prog) * (BladeLength-80) * Projectile.scale);
             }
 
             return result;
@@ -363,7 +365,7 @@ namespace ContentCrate.Items.Weapons.Swung
             return Color.CadetBlue * Terraria.Utils.GetLerpValue(1f, 0.2f, completionRatio, true) * Projectile.Opacity * 0.5f;
 
         }
-        public float WidthFunction(float completionRatio) => Projectile.scale * 30f;
+        public float WidthFunction(float completionRatio) => Projectile.scale * 20f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -381,12 +383,18 @@ namespace ContentCrate.Items.Weapons.Swung
 
         public void DrawSlash()
         {
+            int condition = 1;
+            if (currentAttack == CurrentAttack.Up)
+                condition = -1;
+            
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["ContentCrate:ExobladeSlash"].SetShaderTexture(ModContent.Request<Texture2D>("ContentCrate/Effects/Textures/EternityStreak"));
-            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseColor(new Color(1, 255, 1));
-            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseSecondaryColor(new Color(57, 46, 115));
-            GameShaders.Misc["ContentCrate:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(mirror == 1);
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].SetShaderTexture(ModContent.Request<Texture2D>("ContentCrate/Effects/ShaderTextures/EternityStreak"));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseColor(new Color(44, 141, 171));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].UseSecondaryColor(new Color(30, 43, 43));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].Shader.Parameters["fireColor"].SetValue(new Color(163, 36, 110).ToVector3());
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].Shader.Parameters["flipped"].SetValue((mirror * condition == 1));
             GameShaders.Misc["ContentCrate:ExobladeSlash"].Apply();
+
             TrailDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 25);
             Main.spriteBatch.ExitShaderRegion();
         }
@@ -421,6 +429,11 @@ namespace ContentCrate.Items.Weapons.Swung
             return false;
         }
     }
+
+    /*public class HalberdPacket : Module
+    {
+
+    }*/
 
 
 }

@@ -37,7 +37,7 @@ namespace ContentCrate
         {
 			ContentCrateShaders.LoadShaders();
         }
-        public override void AddRecipeGroups()
+        public override void AddRecipeGroups()/* tModPorter Note: Removed. Use ModSystem.AddRecipeGroups */
         {
 			RecipeGroup BaseGroup(object GroupName, int[] Items)
 			{
