@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj": {}
+    "C:\\Users\\starw\\OneDrive\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj": {
+    "C:\\Users\\starw\\OneDrive\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj",
+        "projectUniqueName": "C:\\Users\\starw\\OneDrive\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj",
         "projectName": "ContentCrate",
-        "projectPath": "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj",
-        "packagesPath": "C:\\Users\\Jason\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jason\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\obj\\",
+        "projectPath": "C:\\Users\\starw\\OneDrive\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\ContentCrate.csproj",
+        "packagesPath": "C:\\Users\\starw\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\starw\\OneDrive\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\ContentCrate\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Jason\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\starw\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,8 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://nuget.bepinex.dev/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {

@@ -41,5 +41,28 @@ namespace ContentCrate.Items.Tools
             recipe.AddTile(TileID.Anvils);
             recipe.Register();
         }
+
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.altFunctionUse == 2)
+            {
+                Item.DamageType = DamageClass.Magic;
+                Item.mana = 20;
+                Item.pick = 0;
+                //Item.shoot = ProjectileID.BlackBolt;
+                Item.shootSpeed = 10;
+            }
+            else
+            {
+                Item.DamageType = DamageClass.Melee;
+                Item.mana = 0;
+                Item.pick = 55;
+                //Item.shoot = ProjectileID.None;
+                Item.shootSpeed = 0;
+            }
+            return true;
+        }
     }
 }
