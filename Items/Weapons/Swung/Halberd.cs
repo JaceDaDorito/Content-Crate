@@ -15,6 +15,10 @@ using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
 using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
+using Terraria.GameContent;
+using Terraria.Net;
+using System.IO;
+
 
 
 namespace ContentCrate.Items.Weapons.Swung
@@ -294,6 +298,7 @@ namespace ContentCrate.Items.Weapons.Swung
             Projectile.Center = Player.MountedCenter + (DistanceFromPlayer * direction);
 
             Projectile.spriteDirection = 1;
+            
             if (Math.Sign(Projectile.velocity.X) * ((int)currentAttack == 1 ? -1 : 1) < 0)
             {
                 Projectile.rotation += MathHelper.PiOver2;
@@ -378,6 +383,9 @@ namespace ContentCrate.Items.Weapons.Swung
                 DrawSlash();
             }
 
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
             return true;
         }
 
@@ -388,7 +396,7 @@ namespace ContentCrate.Items.Weapons.Swung
                 condition = -1;
             
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["ContentCrate:ExobladeSlash"].SetShaderTexture(ModContent.Request<Texture2D>("ContentCrate/Effects/ShaderTextures/EternityStreak"));
+            GameShaders.Misc["ContentCrate:ExobladeSlash"].SetShaderTextureOne(ModContent.Request<Texture2D>("ContentCrate/Effects/ShaderTextures/EternityStreak"));
             GameShaders.Misc["ContentCrate:ExobladeSlash"].UseColor(new Color(44, 141, 171));
             GameShaders.Misc["ContentCrate:ExobladeSlash"].UseSecondaryColor(new Color(30, 43, 43));
             GameShaders.Misc["ContentCrate:ExobladeSlash"].Shader.Parameters["fireColor"].SetValue(new Color(163, 36, 110).ToVector3());
@@ -417,7 +425,16 @@ namespace ContentCrate.Items.Weapons.Swung
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                Vector2 updatedVel = target.velocity + Projectile.velocity;
                 target.velocity += Projectile.velocity;
+
+                ModPacket myPacket = Mod.GetPacket();
+                myPacket.Write((byte)ContentCrateMessageType.SyncNPCMotionDataToServer);
+                myPacket.Write(target.whoAmI);
+                myPacket.WriteVector2(target.Center);
+                myPacket.WriteVector2(updatedVel);
+                myPacket.Send();
+                
                 target.netUpdate = true;
             }
 

@@ -56,6 +56,6 @@ namespace ContentCrate.Items.Armor.Myrmeleon
             recipe.Register();
         }
         public string ExtensionTexture => "ContentCrate/Items/Armor/Myrmeleon/MyrmeleonCrown_HeadExtension";
-        public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new Vector2(0, -54f);
+        public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new Vector2(0, drawInfo.drawPlayer.gravDir <= 0 ? 54f: -54);
     }
 }

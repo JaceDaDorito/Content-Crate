@@ -19,18 +19,27 @@ namespace ContentCrate.Utils
 {
     public static class ShaderUtils
     {
-        internal static readonly FieldInfo UImageFieldMisc = typeof(MiscShaderData).GetField("_uImage1", BindingFlags.NonPublic | BindingFlags.Instance);
+        internal static readonly FieldInfo UImageFieldMiscOne = typeof(MiscShaderData).GetField("_uImage1", BindingFlags.NonPublic | BindingFlags.Instance);
+        internal static readonly FieldInfo UImageFieldMiscTwo = typeof(MiscShaderData).GetField("_uImage2", BindingFlags.NonPublic | BindingFlags.Instance);
         internal static readonly FieldInfo UImageFieldArmor = typeof(ArmorShaderData).GetField("_uImage", BindingFlags.NonPublic | BindingFlags.Instance);
         /// <summary>
         /// Manually sets the texture of a <see cref="MiscShaderData"/> instance, since vanilla's implementation only supports strings that access vanilla textures.
         /// </summary>
         /// <param name="shader">The shader to bind the texture to.</param>
         /// <param name="texture">The texture to bind.</param>
-        public static MiscShaderData SetShaderTexture(this MiscShaderData shader, Asset<Texture2D> texture)
+
+        public static MiscShaderData SetShaderTextureOne(this MiscShaderData shader, Asset<Texture2D> texture)
         {
-            UImageFieldMisc.SetValue(shader, texture);
+            UImageFieldMiscOne.SetValue(shader, texture);
             return shader;
         }
+
+        public static MiscShaderData SetShaderTextureTwo(this MiscShaderData shader, Asset<Texture2D> texture)
+        {
+            UImageFieldMiscTwo.SetValue(shader, texture);
+            return shader;
+        }
+
 
         /// <summary>
         /// Manually sets the texture of a <see cref="ArmorShaderData"/> instance, since vanilla's implementation only supports strings that access vanilla textures.

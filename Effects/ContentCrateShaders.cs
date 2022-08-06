@@ -10,7 +10,7 @@ namespace ContentCrate.Effects
     {
         public static Effect ExobladeSlashShader;
         public static Effect LightningShader;
-        public static Effect DyeOne;
+        public static Effect DyeOneShader;
 
         public static void LoadShaders()
         {
@@ -20,12 +20,12 @@ namespace ContentCrate.Effects
             ExobladeSlashShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/ExobladeSlashShader", AssetRequestMode.ImmediateLoad).Value;
             LightningShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/LightningShader", AssetRequestMode.ImmediateLoad).Value;
 
-            DyeOne = ContentCrate.Instance.Assets.Request<Effect>("Effects/DyeOne", AssetRequestMode.ImmediateLoad).Value;
+            DyeOneShader = ContentCrate.Instance.Assets.Request<Effect>("Effects/DyeOneShader", AssetRequestMode.ImmediateLoad).Value;
 
             GameShaders.Misc["ContentCrate:ExobladeSlash"] = new MiscShaderData(new Ref<Effect>(ExobladeSlashShader), "TrailPass");
             GameShaders.Misc["ContentCrate:LightningShader"] = new MiscShaderData(new Ref<Effect>(LightningShader), "TrailPass");
 
-            GameShaders.Misc["ContentCrate:DyeOne"] = new MiscShaderData(new Ref<Effect>(LightningShader), "TrailPass");
+            GameShaders.Misc["ContentCrate:DyeOneShader"] = new MiscShaderData(new Ref<Effect>(LightningShader), "TrailPass");
         }
     }
 }

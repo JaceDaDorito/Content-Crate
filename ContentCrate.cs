@@ -37,6 +37,8 @@ namespace ContentCrate
         {
 			ContentCrateShaders.LoadShaders();
         }
+
+        [Obsolete]
         public override void AddRecipeGroups()/* tModPorter Note: Removed. Use ModSystem.AddRecipeGroups */
         {
 			RecipeGroup BaseGroup(object GroupName, int[] Items)
@@ -76,5 +78,7 @@ namespace ContentCrate
 				ItemID.PlatinumBar
 			}));
 		}
+		public override void HandlePacket(BinaryReader reader, int whoAmI) => ContentCrateNetcode.HandlePacket(this, reader, whoAmI);
 	}
+	
 }
