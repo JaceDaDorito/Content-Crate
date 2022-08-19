@@ -12,7 +12,7 @@ namespace ContentCrate.Items.Dyes
     public class TestDye : BaseDye
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/DyeOneShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
-            UseColor(new Color(199, 56, 185)).UseSecondaryColor(new Color(242, 121, 176)).SetShaderTextureArmor(ModContent.Request<Texture2D>("ContentCrate/Effects/ShaderTextures/EternityStreak", AssetRequestMode.ImmediateLoad));
+            UseColor(new Color(17, 247, 244)).UseSecondaryColor(new Color(242, 121, 176)).SetShaderTextureArmor(ModContent.Request<Texture2D>("ContentCrate/Effects/ShaderTextures/T_Noise_06", AssetRequestMode.ImmediateLoad));
         public override void SafeSetStaticDefaults()
         {
             SacrificeTotal = 3;
